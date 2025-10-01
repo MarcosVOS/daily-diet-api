@@ -1,0 +1,8 @@
+#Dependencies
+node_modules
+
+#IDLE
+.vscode
+
+#Enviroment
+.env
