@@ -1,7 +1,9 @@
-import fastify from "fastify";
+import app from "./app.ts"
 
-const app = fastify()
-
-app.get("/", async function aliveRouter(request, reply) {
-    return reply.status(200).send({ "status": "ok" })
+app.listen({
+    port: 3000
+}).then(() => {
+    console.log("HTTP server is running  ", 3000)
 })
+
+
