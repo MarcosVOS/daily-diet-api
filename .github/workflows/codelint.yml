@@ -1,6 +1,6 @@
-name: Code Lint
+name: CodeLint
 
-on: pull_request
+on: [pull_request]
 
 jobs:
   CodeLint:
