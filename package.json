@@ -5,10 +5,10 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "docker compose -f infra/compose.yml up -d && node --watch src/server.ts",
+    "dev": "docker compose -f infra/compose.yml up -d database --wait && npm run knex:migrate && node --watch src/server.ts",
     "test": "vitest",
     "commit": "cz",
-    "test:watch": "vitest --watch",
+    "test:watch": "docker compose -f infra/compose.yml up -d test-database --wait && vitest --watch",
     "prepare": "husky",
     "lint:check": "prettier . --check",
     "lint:fix": "prettier . --write",

@@ -12,6 +12,7 @@ export async function statusRoutes(app: FastifyInstance) {
         timeStamp: new Date().toISOString(),
       });
     } catch (error) {
+      console.error("Database connection error:", error);
       return reply.status(500).send({
         status: "error",
         database: "disconnected",

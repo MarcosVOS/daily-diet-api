@@ -9,6 +9,7 @@ export const config: Knex.Config = {
     port: env.PG_PORT,
     user: env.POSTGRES_USER,
     password: env.POSTGRES_PASSWORD,
+    database: env.POSTGRES_DB,
   },
   migrations: {
     extension: "ts",
