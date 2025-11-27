@@ -5,6 +5,6 @@ import usersRoutes from "./routes/users.ts";
 const app = fastify();
 
 app.register(statusRoutes);
-app.register(usersRoutes);
+app.register(usersRoutes, { prefix: "/users" });
 
 export default app;
