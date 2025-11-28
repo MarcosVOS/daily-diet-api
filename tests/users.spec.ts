@@ -27,6 +27,13 @@ async function getUserById(
   return await request(app.server).get(`/users/${id}`).send();
 }
 
+async function deleteById(
+  app: FastifyInstance,
+  id: string,
+): Promise<request.Response> {
+  return await request(app.server).delete(`/users/${id}`).send();
+}
+
 describe("Users Routes", () => {
   before(async () => {
     await app.ready();
@@ -117,7 +124,7 @@ describe("Users Routes", () => {
       });
     });
 
-    it("It should not be possible to find a user with an invalid uid", async () => {
+    it("Should not be possible to find a user with an invalid uid", async () => {
       const getUserResponse = await getUserById(app, "- invalid-uid-");
       expect(getUserResponse.status).toBe(400);
       expect(getUserResponse.body).toEqual({
@@ -147,15 +154,45 @@ describe("Users Routes", () => {
       });
     });
   });
+  describe("Delete User", () => {
+    it("should not be possible to find a user with an id not found", async () => {
+      const deleteUserResponse = await getUserById(
+        app,
+        "9fba6158-5c19-4355-80bb-eac655f6afaf",
+      );
+      expect(deleteUserResponse.status).toBe(404);
+      expect(deleteUserResponse.body).toEqual({
+        error: "Not Found",
+        message: "user not found",
+        statusCode: 404,
+      });
+    });
 
-  describe("Update User", () => {
-    it("Shouldn't be able to create a new user without email", async () => {});
-    it("Shouldn't be able to create a new user without username", async () => {});
-    it("Shouldn't be able to create a new user with same email", async () => {});
-    it("Should be able to create a new user", async () => {});
+    it("Should not be possible to find a user with an invalid uid", async () => {
+      const deleteUserResponse = await deleteById(app, "- invalid-uid-");
+      expect(deleteUserResponse.status).toBe(400);
+      expect(deleteUserResponse.body).toEqual({
+        error: "Bad Request",
+        message: "params id must be a valid UUID",
+        statusCode: 400,
+      });
+    });
+
+    it("Should be able to delete a user", async () => {
+      const createUser: CreateUser = {
+        username: "john doe",
+        email: "johndoe_deletebyid@example.com",
+      };
+      const response = await createUserRequest(app, createUser);
+      expect(response.status).toBe(201);
+      const userId = response.body.id;
+
+      const deleteUser = await deleteById(app, userId);
+      expect(deleteUser.status).toBe(204);
+    });
   });
 
-  describe("Delete User", () => {
+  describe("Update User", () => {
     it("Shouldn't be able to create a new user without email", async () => {});
     it("Shouldn't be able to create a new user without username", async () => {});
     it("Shouldn't be able to create a new user with same email", async () => {});
