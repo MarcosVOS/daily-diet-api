@@ -7,17 +7,26 @@ import { knex } from "../src/database";
 import { Knex as setupKnex } from "knex";
 import { object } from "zod";
 import { get } from "http";
+import { promises } from "dns";
 
-interface CreateUser {
+interface UserEntity {
   username?: string;
   email?: string;
 }
 
 async function createUserRequest(
   app: FastifyInstance,
-  c: CreateUser,
+  c: UserEntity,
 ): Promise<request.Response> {
   return await request(app.server).post("/users").send(c);
+}
+
+async function updateUserById(
+  app: FastifyInstance,
+  id: string,
+  c: UserEntity,
+): Promise<request.Response> {
+  return await request(app.server).put(`/users/${id}`).send(c);
 }
 
 async function getUserById(
@@ -42,7 +51,7 @@ describe("Users Routes", () => {
 
   describe("Create User", () => {
     it("Shouldn't be able to create a new user without email", async () => {
-      const createUserWithoutEmail: CreateUser = { username: "testuser" };
+      const createUserWithoutEmail: UserEntity = { username: "testuser" };
       const response = await createUserRequest(app, createUserWithoutEmail);
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
@@ -52,7 +61,7 @@ describe("Users Routes", () => {
       });
     });
     it("Shouldn't be able to create a new user without username", async () => {
-      const createUserWithoutEmail: CreateUser = {
+      const createUserWithoutEmail: UserEntity = {
         email: "johndoe@example.com",
       };
       const response = await createUserRequest(app, createUserWithoutEmail);
@@ -64,7 +73,7 @@ describe("Users Routes", () => {
       });
     });
     it("Shouldn't be able to create a new user with invalid email", async () => {
-      const createUserWithoutEmail: CreateUser = {
+      const createUserWithoutEmail: UserEntity = {
         username: "john doe",
         email: "invalid-email",
       };
@@ -77,7 +86,7 @@ describe("Users Routes", () => {
       });
     });
     it("Should be able to create a new user", async () => {
-      const createUser: CreateUser = {
+      const createUser: UserEntity = {
         username: "john doe",
         email: "johndoe@example.com",
       };
@@ -93,7 +102,7 @@ describe("Users Routes", () => {
       );
     });
     it("Shouldn't be able to create a new user with same email", async () => {
-      const createUserWithDuplicateEmail: CreateUser = {
+      const createUserWithDuplicateEmail: UserEntity = {
         username: "john doe",
         email: "johndoe2@example.com",
       };
@@ -135,7 +144,7 @@ describe("Users Routes", () => {
     });
 
     it("Should be able to return user", async () => {
-      const createUser: CreateUser = {
+      const createUser: UserEntity = {
         username: "john doe",
         email: "johndoe_getbyid@example.com",
       };
@@ -179,7 +188,7 @@ describe("Users Routes", () => {
     });
 
     it("Should be able to delete a user", async () => {
-      const createUser: CreateUser = {
+      const createUser: UserEntity = {
         username: "john doe",
         email: "johndoe_deletebyid@example.com",
       };
@@ -193,9 +202,112 @@ describe("Users Routes", () => {
   });
 
   describe("Update User", () => {
-    it("Shouldn't be able to create a new user without email", async () => {});
-    it("Shouldn't be able to create a new user without username", async () => {});
-    it("Shouldn't be able to create a new user with same email", async () => {});
-    it("Should be able to create a new user", async () => {});
+    it("Shouldn't be able to update a user with existing email", async () => {
+      const createUser1: UserEntity = {
+        username: "john doe",
+        email: "johndoupdatewithsameemail1@example.com",
+      };
+      const responseCreateUser1 = await createUserRequest(app, createUser1);
+      expect(responseCreateUser1.status).toBe(201);
+
+      const createUser2: UserEntity = {
+        username: "john doe",
+        email: "johndoupdatewithsameemail2@example.com",
+      };
+      const responseCreateUser2 = await createUserRequest(app, createUser2);
+      expect(responseCreateUser2.status).toBe(201);
+
+      const updateUserSameEmail = await updateUserById(
+        app,
+        responseCreateUser2.body.id,
+        {
+          username: "john doe updated",
+          email: "johndoupdatewithsameemail1@example.com",
+        },
+      );
+
+      expect(updateUserSameEmail.status).toBe(400);
+      expect(updateUserSameEmail.body).toEqual(
+        expect.objectContaining({
+          error: "Bad Request",
+          message: "email address is invalid",
+          statusCode: 400,
+        }),
+      );
+    });
+    it("Should be able to update a user", async () => {
+      const createUser: UserEntity = {
+        username: "john doe",
+        email: "johndoupdate@example.com",
+      };
+      const responseCreateUser = await createUserRequest(app, createUser);
+      expect(responseCreateUser.status).toBe(201);
+
+      const responseUpdateUser = await updateUserById(
+        app,
+        responseCreateUser.body.id,
+        {
+          username: "john doe updated",
+          email: "johndoeupdated@example.com",
+        },
+      );
+
+      expect(responseUpdateUser.status).toBe(200);
+      expect(responseUpdateUser.body).toEqual(
+        expect.objectContaining({
+          id: responseCreateUser.body.id,
+          username: "john doe updated",
+          email: "johndoeupdated@example.com",
+        }),
+      );
+    });
+    it("Should be able to update a user without changing email", async () => {
+      const createUser: UserEntity = {
+        username: "john doe",
+        email: "johndoupdate@example.com",
+      };
+      const responseCreateUser = await createUserRequest(app, createUser);
+      expect(responseCreateUser.status).toBe(201);
+
+      const responseUpdateUser = await updateUserById(
+        app,
+        responseCreateUser.body.id,
+        {
+          username: "john doe updated",
+        },
+      );
+      expect(responseUpdateUser.status).toBe(200);
+      expect(responseUpdateUser.body).toEqual(
+        expect.objectContaining({
+          id: responseCreateUser.body.id,
+          username: "john doe updated",
+          email: "johndoupdate@example.com",
+        }),
+      );
+    });
+    it("Should be able to update a user without changing username", async () => {
+      const createUser: UserEntity = {
+        username: "john doe same user name",
+        email: "johndoeupdateusername@example.com",
+      };
+      const responseCreateUser = await createUserRequest(app, createUser);
+      expect(responseCreateUser.status).toBe(201);
+
+      const responseUpdateUser = await updateUserById(
+        app,
+        responseCreateUser.body.id,
+        {
+          email: "johndoeupdateusername2@example.com",
+        },
+      );
+      expect(responseUpdateUser.status).toBe(200);
+      expect(responseUpdateUser.body).toEqual(
+        expect.objectContaining({
+          id: responseCreateUser.body.id,
+          username: "john doe same user name",
+          email: "johndoeupdateusername2@example.com",
+        }),
+      );
+    });
   });
 });

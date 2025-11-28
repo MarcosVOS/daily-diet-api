@@ -143,7 +143,6 @@ export default async function usersRoutes(app: FastifyInstance) {
 
     const user = await knex("users").where("id", paramsResult.data.id).first();
 
-    console.log(result.data?.email);
     if (result.success && result.data.email != undefined) {
       const existUser = await knex("users")
         .where("email", result.data.email)
