@@ -89,4 +89,34 @@ export default async function usersRoutes(app: FastifyInstance) {
 
     return reply.status(200).send({ user });
   });
+
+  app.delete("/:id", async (request, reply) => {
+    const getUserParamsSchema = z.object({
+      id: z.uuid(),
+    });
+
+    const result = getUserParamsSchema.safeParse(request.params);
+
+    if (!result.success) {
+      return reply.status(400).send({
+        error: "Bad Request",
+        message: "params id must be a valid UUID",
+        statusCode: 400,
+      });
+    }
+
+    const user = await knex("users").where("id", result.data.id).first();
+
+    if (!user) {
+      return reply.status(404).send({
+        error: "Not Found",
+        message: "user not found",
+        statusCode: 404,
+      });
+    }
+
+    await knex("users").where("id", result.data.id).delete();
+
+    return reply.status(204).send();
+  });
 }
