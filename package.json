@@ -5,13 +5,17 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "docker compose up -d && node --watch src/server.ts",
+    "dev": "docker compose -f infra/compose.yml up -d database --wait && npm run knex:migrate && node --watch src/server.ts",
     "test": "vitest",
     "commit": "cz",
-    "test:watch": "vitest --watch",
+    "test:watch": "docker compose -f infra/compose.yml up -d test-database --wait && vitest --watch",
     "prepare": "husky",
     "lint:check": "prettier . --check",
-    "lint:fix": "prettier . --write"
+    "lint:fix": "prettier . --write",
+    "knex": "node --no-warnings --import tsx ./node_modules/.bin/knex",
+    "knex:migrate": "npm run knex -- migrate:latest",
+    "knex:rollback": "npm run knex -- migrate:rollback",
+    "knex:make": "npm run knex -- migrate:make"
   },
   "keywords": [],
   "author": "",
@@ -33,7 +37,8 @@
     "husky": "^9.1.7",
     "prettier": "3.6.2",
     "supertest": "^7.1.4",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "tsx": "^4.20.6"
   },
   "config": {
     "commitizen": {

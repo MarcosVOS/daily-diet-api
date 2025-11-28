@@ -7,7 +7,9 @@ describe("Status Routes", () => {
     await app.ready();
   });
   it("should be return api status", async () => {
-    const response = await request(app.server).get("/").expect(200);
-    expect(response.body).toEqual(expect.objectContaining({ status: "ok" }));
+    const response = await request(app.server).get("/status").expect(200);
+    expect(response.body).toEqual(
+      expect.objectContaining({ status: "ok", database: "connected" }),
+    );
   });
 });
