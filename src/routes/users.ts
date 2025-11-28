@@ -119,4 +119,83 @@ export default async function usersRoutes(app: FastifyInstance) {
 
     return reply.status(204).send();
   });
+
+  app.put("/:id", async (request, reply) => {
+    const updateUserSchema = z.object({
+      username: z.string().optional(),
+      email: z.email().optional(),
+    });
+
+    const getUserParamsSchema = z.object({
+      id: z.uuid(),
+    });
+
+    const result = updateUserSchema.safeParse(request.body);
+    const paramsResult = getUserParamsSchema.safeParse(request.params);
+
+    if (!paramsResult.success) {
+      return reply.status(400).send({
+        error: "Bad Request",
+        message: "params id must be a valid UUID",
+        statusCode: 400,
+      });
+    }
+
+    const user = await knex("users").where("id", paramsResult.data.id).first();
+
+    console.log(result.data?.email);
+    if (result.success && result.data.email != undefined) {
+      const existUser = await knex("users")
+        .where("email", result.data.email)
+        .first();
+
+      if (existUser) {
+        return reply.status(400).send({
+          error: "Bad Request",
+          message: "email address is invalid",
+          statusCode: 400,
+        });
+      }
+    }
+
+    if (!result.success) {
+      if (
+        result.error.issues[0].path.find((p) => p === "email") &&
+        result.error.issues[0].message === "Invalid email address"
+      ) {
+        return reply.status(400).send({
+          error: "Bad Request",
+          message: "body must send a valid email address",
+          statusCode: 400,
+        });
+      }
+      if (result.error.issues[0].path.find((p) => p === "email")) {
+        return reply.status(400).send({
+          error: "Bad Request",
+          message: "body must have required property 'email'",
+          statusCode: 400,
+        });
+      }
+    }
+
+    if (!user) {
+      return reply.status(404).send({
+        error: "Not Found",
+        message: "user not found",
+        statusCode: 404,
+      });
+    }
+
+    const userToBeUpdated = {
+      ...user,
+      ...result.data,
+    };
+
+    const updateUser = await knex("users")
+      .where("id", paramsResult.data.id)
+      .update(userToBeUpdated)
+      .returning("*");
+
+    return reply.status(200).send(updateUser[0]);
+  });
 }
