@@ -29,12 +29,22 @@ async function getMealsRequest(app: FastifyInstance, sessionID: string) {
     .set("Cookie", [`sessionId=${sessionID}`]);
 }
 
+async function deleteMealsRequest(
+  app: FastifyInstance,
+  mealsId: string,
+  sessionID: string,
+) {
+  return request(app.server)
+    .delete(`/meals/${mealsId}`)
+    .set("Cookie", [`sessionId=${sessionID}`]);
+}
+
 describe("Meals Routes", () => {
   beforeAll(async () => {
     app.ready();
     prepareDatabase();
   });
-  describe("Get /meals", () => {
+  describe("Get by session ID", () => {
     it("should be possible to list all meals", async () => {
       const createUser = await createUserRequest(app, {
         username: "meal_user",
@@ -109,7 +119,7 @@ describe("Meals Routes", () => {
       );
     });
   });
-  describe("Post /meals", () => {
+  describe("Create meals", () => {
     it("should be possible to create a meal", async () => {
       const createUser = await createUserRequest(app, {
         username: "meal_user",
@@ -295,14 +305,154 @@ describe("Meals Routes", () => {
       );
     });
   });
-  describe("Put /meals/:id", () => {
+  describe("Update meals", () => {
     it("should return 200", async () => {
       expect(200).toBe(200);
     });
   });
-  describe("Delete /meals/:id", () => {
-    it("should return 200", async () => {
-      expect(200).toBe(200);
+  describe("Delete meals", () => {
+    it("should be possible to delete a meal", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_delete@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const deleteMeals = await deleteMealsRequest(
+        app,
+        createMeal.body.id,
+        createUser.body.session_id,
+      );
+
+      expect(deleteMeals.statusCode).toBe(204);
+    });
+    it("Shouldn't be possible to delete a meal thats not existing", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_delete_meals_not_existing@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+      const deleteMeals = await deleteMealsRequest(
+        app,
+        "99695c5b-86a4-4d56-9307-6d41a8b04eff",
+        createUser.body.session_id,
+      );
+
+      expect(deleteMeals.statusCode).toBe(404);
+      expect(deleteMeals.body).toEqual(
+        expect.objectContaining({
+          error: "Not Found",
+          message: "meal not found",
+          statusCode: 404,
+        }),
+      );
+    });
+    it("Shouldn't be possible to delete a meal with invalid meal ID", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_delete_meals_invalid_id@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const deleteMeals = await deleteMealsRequest(
+        app,
+        "invalid-meal-id",
+        createUser.body.session_id,
+      );
+
+      expect(deleteMeals.statusCode).toBe(400);
+      expect(deleteMeals.body).toEqual(
+        expect.objectContaining({
+          error: "Bad Request",
+          message: "params id must be a valid uuid",
+          statusCode: 400,
+        }),
+      );
+    });
+    it("Shouldn't be possible to delete a meal without session", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_delete_without_session@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const deleteMeals = await deleteMealsRequest(app, createMeal.body.id, "");
+
+      expect(deleteMeals.statusCode).toBe(401);
+      expect(deleteMeals.body).toEqual(
+        expect.objectContaining({ error: "Unauthorized" }),
+      );
+    });
+    it("Shouldn't be possible to delete a meal with invalid session", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_delete_with_invalid_session@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const deleteMeals = await deleteMealsRequest(app, createMeal.body.id, "");
+
+      expect(deleteMeals.statusCode).toBe(401);
+      expect(deleteMeals.body).toEqual(
+        expect.objectContaining({ error: "Unauthorized" }),
+      );
     });
   });
 });
