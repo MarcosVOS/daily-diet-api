@@ -3,7 +3,9 @@ import { statusRoutes } from "./routes/status.ts";
 import usersRoutes from "./routes/users.ts";
 import { mealsRoutes } from "./routes/meals.ts";
 import cookie from "@fastify/cookie";
+import { runMigrations } from "./runPendingMigrations.ts";
 
+await runMigrations();
 export const app = fastify();
 
 app.register(cookie);

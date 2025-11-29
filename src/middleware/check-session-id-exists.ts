@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { knex } from "../database.js";
+import { knex } from "../database.ts";
 import { z } from "zod";
 
 export async function checkSessionIdExists(
