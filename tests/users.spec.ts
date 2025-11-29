@@ -1,23 +1,24 @@
 import { describe, expect, it } from "vitest";
-import { app } from "../src/app";
+import { app } from "../src/app.ts";
 import { before } from "node:test";
-import { FastifyInstance } from "fastify";
+import type { FastifyInstance } from "fastify";
 import request from "supertest";
-import { knex } from "../src/database";
+import { knex } from "../src/database.ts";
+import prepareDatabase from "./helpers.ts";
 
 interface UserEntity {
   username?: string;
   email?: string;
 }
 
-async function createUserRequest(
+export async function createUserRequest(
   app: FastifyInstance,
   c: UserEntity,
 ): Promise<request.Response> {
   return await request(app.server).post("/users").send(c);
 }
 
-async function updateUserById(
+export async function updateUserById(
   app: FastifyInstance,
   id: string,
   c: UserEntity,
@@ -25,14 +26,14 @@ async function updateUserById(
   return await request(app.server).put(`/users/${id}`).send(c);
 }
 
-async function getUserById(
+export async function getUserById(
   app: FastifyInstance,
   id: string,
 ): Promise<request.Response> {
   return await request(app.server).get(`/users/${id}`).send();
 }
 
-async function deleteById(
+export async function deleteById(
   app: FastifyInstance,
   id: string,
 ): Promise<request.Response> {
@@ -42,7 +43,7 @@ async function deleteById(
 describe("Users Routes", () => {
   before(async () => {
     await app.ready();
-    await knex("users").del();
+    prepareDatabase();
   });
 
   describe("Create User", () => {
