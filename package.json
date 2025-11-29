@@ -21,6 +21,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fastify/cookie": "^11.0.2",
     "dotenv": "^17.2.3",
     "fastify": "^5.6.1",
     "knex": "^3.1.0",
@@ -35,10 +36,10 @@
     "commitizen": "^4.3.1",
     "cz-conventional-changelog": "^3.0.1",
     "husky": "^9.1.7",
-    "prettier": "3.6.2",
+    "prettier": "3.7.2",
     "supertest": "^7.1.4",
-    "vitest": "^3.2.4",
-    "tsx": "^4.20.6"
+    "tsx": "^4.20.6",
+    "vitest": "^4.0.14"
   },
   "config": {
     "commitizen": {
