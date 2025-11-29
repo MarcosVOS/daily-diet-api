@@ -260,7 +260,7 @@ describe("Meals Routes", () => {
         expect.objectContaining({
           error: "Bad Request",
           message:
-            "body must have required properties: name, description, is_on_diet",
+            "body must have required properties: name, description, is_on_diet, created_at",
           statusCode: 400,
         }),
       );

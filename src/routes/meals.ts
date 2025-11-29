@@ -17,6 +17,7 @@ export async function mealsRoutes(app: FastifyInstance) {
       name: z.string(),
       description: z.string(),
       is_on_diet: z.boolean(),
+      created_at: z.coerce.date(),
     });
 
     const result = createMealsSchema.safeParse(request.body);
@@ -39,6 +40,7 @@ export async function mealsRoutes(app: FastifyInstance) {
         description: result.data.description,
         is_on_diet: result.data.is_on_diet,
         user_id: request.user!.id,
+        created_at: result.data.created_at,
       })
       .returning("*");
 
@@ -63,6 +65,7 @@ export async function mealsRoutes(app: FastifyInstance) {
       name: z.string().optional(),
       description: z.string().optional(),
       is_on_diet: z.boolean().optional(),
+      created_at: z.coerce.date().optional(),
     });
 
     const resultBody = updateMealsSchema.safeParse(request.body);
