@@ -8,7 +8,7 @@
     "dev": "docker compose -f infra/compose.yml up -d database --wait && npm run knex:migrate && node --watch src/server.ts",
     "test": "vitest",
     "commit": "cz",
-    "test:watch": "docker compose -f infra/compose.yml up -d test-database --wait && vitest --watch",
+    "test:watch": "docker compose -f infra/compose.yml up -d test-database --wait && vitest --watch -no-file-parallelism",
     "prepare": "husky",
     "lint:check": "prettier . --check",
     "lint:fix": "prettier . --write",

@@ -1,7 +1,8 @@
 import type { FastifyInstance } from "fastify";
 import { checkSessionIdExists } from "../middleware/check-session-id-exists.ts";
-import knex from "knex";
+import { knex } from "../database.ts";
 import { z } from "zod";
+import { randomUUID } from "node:crypto";
 
 export async function mealsRoutes(app: FastifyInstance) {
   app.addHook("preHandler", checkSessionIdExists);
@@ -31,14 +32,17 @@ export async function mealsRoutes(app: FastifyInstance) {
       });
     }
 
-    const createMeals = await knex("meals").insert({
-      name: result.data.name,
-      description: result.data.description,
-      is_on_diet: result.data.is_on_diet,
-      user_id: request.user!.id,
-    });
+    const createdMeals = await knex("meals")
+      .insert({
+        id: randomUUID(),
+        name: result.data.name,
+        description: result.data.description,
+        is_on_diet: result.data.is_on_diet,
+        user_id: request.user!.id,
+      })
+      .returning("*");
 
-    return reply.status(201).send();
+    return reply.status(200).send(createdMeals[0]);
   });
   app.put("/:id", async (request, reply) => {
     const paramsSchema = z.object({
