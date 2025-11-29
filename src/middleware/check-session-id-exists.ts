@@ -13,7 +13,7 @@ export async function checkSessionIdExists(
     });
   }
 
-  const validSession = z.string().uuid().safeParse(sessionId);
+  const validSession = z.uuid().safeParse(sessionId);
   if (!validSession.success) {
     return reply.status(401).send({
       error: "Unauthorized",
