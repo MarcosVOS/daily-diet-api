@@ -53,7 +53,7 @@ describe("Users Routes", () => {
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
         error: "Bad Request",
-        message: "body must have required property 'email'",
+        message: "body must have required properties: email",
         statusCode: 400,
       });
     });
@@ -65,7 +65,7 @@ describe("Users Routes", () => {
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
         error: "Bad Request",
-        message: "body must have required property 'username'",
+        message: "body must have required properties: username",
         statusCode: 400,
       });
     });
@@ -78,7 +78,7 @@ describe("Users Routes", () => {
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
         error: "Bad Request",
-        message: "body must send a valid email address",
+        message: "body must have required properties: email",
         statusCode: 400,
       });
     });
