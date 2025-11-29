@@ -60,9 +60,9 @@ export async function mealsRoutes(app: FastifyInstance) {
     }
 
     const updateMealsSchema = z.object({
-      name: z.string(),
-      description: z.string(),
-      is_on_diet: z.boolean(),
+      name: z.string().optional(),
+      description: z.string().optional(),
+      is_on_diet: z.boolean().optional(),
     });
 
     const resultBody = updateMealsSchema.safeParse(request.body);
@@ -80,6 +80,40 @@ export async function mealsRoutes(app: FastifyInstance) {
       });
     }
 
+    if (
+      !resultBody.data.name &&
+      !resultBody.data.description &&
+      resultBody.data.is_on_diet === undefined
+    ) {
+      return reply.status(400).send({
+        error: "Bad Request",
+        message: "body must have at least one property to update",
+        statusCode: 400,
+      });
+    }
+
+    if (
+      resultBody.data.name !== undefined &&
+      resultBody.data.name.trim() === ""
+    ) {
+      return reply.status(400).send({
+        error: "Bad Request",
+        message: "name cannot be empty",
+        statusCode: 400,
+      });
+    }
+
+    if (
+      resultBody.data.description !== undefined &&
+      resultBody.data.description.trim() === ""
+    ) {
+      return reply.status(400).send({
+        error: "Bad Request",
+        message: "description cannot be empty",
+        statusCode: 400,
+      });
+    }
+
     const meal = await knex("meals")
       .where({ id: resultParams.data.id, user_id: request.user!.id })
       .first();
@@ -92,14 +126,17 @@ export async function mealsRoutes(app: FastifyInstance) {
       });
     }
 
-    await knex("meals").where({ id: resultParams.data.id }).update({
-      name: resultBody.data.name,
-      description: resultBody.data.description,
-      is_on_diet: resultBody.data.is_on_diet,
-      updated_at: new Date(),
-    });
+    const updateMeals = await knex("meals")
+      .where({ id: resultParams.data.id })
+      .update({
+        name: resultBody.data.name,
+        description: resultBody.data.description,
+        is_on_diet: resultBody.data.is_on_diet,
+        updated_at: new Date(),
+      })
+      .returning("*");
 
-    return reply.status(204).send();
+    return reply.status(200).send(updateMeals[0]);
   });
   app.delete("/:id", async (request, reply) => {
     const paramsSchema = z.object({

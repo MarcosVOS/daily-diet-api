@@ -39,6 +39,18 @@ async function deleteMealsRequest(
     .set("Cookie", [`sessionId=${sessionID}`]);
 }
 
+async function updateMealsRequest(
+  app: FastifyInstance,
+  mealsId: string,
+  sessionID: string,
+  meal: MealsEntity,
+) {
+  return request(app.server)
+    .put(`/meals/${mealsId}`)
+    .send(meal)
+    .set("Cookie", [`sessionId=${sessionID}`]);
+}
+
 describe("Meals Routes", () => {
   beforeAll(async () => {
     app.ready();
@@ -306,8 +318,468 @@ describe("Meals Routes", () => {
     });
   });
   describe("Update meals", () => {
-    it("should return 200", async () => {
-      expect(200).toBe(200);
+    it("should be possible to update the name of a meal", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "user_meal_update_only_name@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const updateMeals = await updateMealsRequest(
+        app,
+        createMeal.body.id,
+        createUser.body.session_id,
+        {
+          name: "Updated Salad",
+        },
+      );
+
+      expect(updateMeals.statusCode).toBe(200);
+      expect(updateMeals.body).toEqual(
+        expect.objectContaining({
+          name: "Updated Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          user_id: createUser.body.id,
+        }),
+      );
+    });
+    it("should be possible to update the description of a meal", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_update_only_description@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const updateMeals = await updateMealsRequest(
+        app,
+        createMeal.body.id,
+        createUser.body.session_id,
+        {
+          description: "Updated fresh vegetable salad",
+        },
+      );
+
+      expect(updateMeals.statusCode).toBe(200);
+      expect(updateMeals.body).toEqual(
+        expect.objectContaining({
+          name: "Salad",
+          description: "Updated fresh vegetable salad",
+          is_on_diet: true,
+          user_id: createUser.body.id,
+        }),
+      );
+    });
+    it("should be possible to update the is_on_diet of a meal", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_update_only_is_on_diet@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const updateMeals = await updateMealsRequest(
+        app,
+        createMeal.body.id,
+        createUser.body.session_id,
+        {
+          is_on_diet: false,
+        },
+      );
+
+      expect(updateMeals.statusCode).toBe(200);
+      expect(updateMeals.body).toEqual(
+        expect.objectContaining({
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: false,
+          user_id: createUser.body.id,
+        }),
+      );
+    });
+    it("should be possible to update all fields of a meal", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_update_all_fields@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const updateMeals = await updateMealsRequest(
+        app,
+        createMeal.body.id,
+        createUser.body.session_id,
+        {
+          name: "Updated Salad",
+          description: "Updated fresh vegetable salad",
+          is_on_diet: false,
+          created_at: new Date().toISOString(),
+        },
+      );
+
+      expect(updateMeals.statusCode).toBe(200);
+      expect(updateMeals.body).toEqual(
+        expect.objectContaining({
+          name: "Updated Salad",
+          description: "Updated fresh vegetable salad",
+          is_on_diet: false,
+          user_id: createUser.body.id,
+        }),
+      );
+    });
+    it("shouldn't be possible to update a meal for empty name", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_update_empty_name@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const updateMeals = await updateMealsRequest(
+        app,
+        createMeal.body.id,
+        createUser.body.session_id,
+        {
+          name: "",
+          description: "Fresh vegetable salad",
+        },
+      );
+
+      expect(updateMeals.statusCode).toBe(400);
+      expect(updateMeals.body).toEqual(
+        expect.objectContaining({
+          error: "Bad Request",
+          message: "name cannot be empty",
+          statusCode: 400,
+        }),
+      );
+    });
+    it("shouldn't be possible to update a meal for empty description", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_update_empty_description@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const updateMeals = await updateMealsRequest(
+        app,
+        createMeal.body.id,
+        createUser.body.session_id,
+        {
+          name: "Salad",
+          description: "",
+        },
+      );
+
+      expect(updateMeals.statusCode).toBe(400);
+      expect(updateMeals.body).toEqual(
+        expect.objectContaining({
+          error: "Bad Request",
+          message: "description cannot be empty",
+          statusCode: 400,
+        }),
+      );
+    });
+    it("shouldn't be possible to update a meal without body", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_update_without_body@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const updateMeals = await updateMealsRequest(
+        app,
+        createMeal.body.id,
+        createUser.body.session_id,
+        {},
+      );
+
+      expect(updateMeals.statusCode).toBe(400);
+      expect(updateMeals.body).toEqual(
+        expect.objectContaining({
+          error: "Bad Request",
+          message: "body must have at least one property to update",
+          statusCode: 400,
+        }),
+      );
+    });
+    it("should be possible to update a meal that doesn't exist", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_update_meal_not_exist@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const updateMeals = await updateMealsRequest(
+        app,
+        "1f2dc158-ef86-4abc-b57c-855fba613a41",
+        createUser.body.session_id,
+        {
+          name: "Updated Salad",
+        },
+      );
+
+      expect(updateMeals.statusCode).toBe(404);
+      expect(updateMeals.body).toEqual(
+        expect.objectContaining({
+          error: "Not Found",
+          message: "meal not found",
+          statusCode: 404,
+        }),
+      );
+    });
+    it("should be possible to update a meal that invalid meal id", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_update_meal_invalid_id@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const updateMeals = await updateMealsRequest(
+        app,
+        "invalid-meal-id",
+        createUser.body.session_id,
+        {
+          name: "Updated Salad",
+        },
+      );
+
+      expect(updateMeals.statusCode).toBe(400);
+      expect(updateMeals.body).toEqual(
+        expect.objectContaining({
+          error: "Bad Request",
+          message: "params id must be a valid uuid",
+          statusCode: 400,
+        }),
+      );
+    });
+    it("should be possible to update a meal that with invalid session", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_update_meal_invalid_session@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const updateMeals = await updateMealsRequest(
+        app,
+        createMeal.body.id,
+        "invalid-session-id",
+        {
+          name: "Updated Salad",
+        },
+      );
+
+      expect(updateMeals.statusCode).toBe(401);
+      expect(updateMeals.body).toEqual(
+        expect.objectContaining({ error: "Unauthorized" }),
+      );
+    });
+    it("should be possible to update a meal that without session", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_update_meal_without_session@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const updateMeals = await updateMealsRequest(
+        app,
+        createMeal.body.id,
+        "",
+        {
+          name: "Updated Salad",
+        },
+      );
+
+      expect(updateMeals.statusCode).toBe(401);
+      expect(updateMeals.body).toEqual(
+        expect.objectContaining({ error: "Unauthorized" }),
+      );
+    });
+    it("should be possible to update a meal with inexistent session", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_update_meal_inexistent_session@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const updateMeals = await updateMealsRequest(
+        app,
+        createMeal.body.id,
+        "f227b7c5-8549-47bc-99d9-8b6ca52b244d",
+        {
+          name: "Updated Salad",
+        },
+      );
+
+      expect(updateMeals.statusCode).toBe(401);
+      expect(updateMeals.body).toEqual(
+        expect.objectContaining({ error: "Unauthorized" }),
+      );
     });
   });
   describe("Delete meals", () => {
