@@ -9,7 +9,7 @@ interface MealsEntity {
   name?: string;
   description?: string;
   is_on_diet?: boolean;
-  created_at?: string;
+  created_at?: Date;
 }
 
 async function createMealsRequest(
@@ -71,7 +71,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -146,7 +146,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -173,7 +173,7 @@ describe("Meals Routes", () => {
         {
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -200,7 +200,7 @@ describe("Meals Routes", () => {
         {
           name: "Salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -227,7 +227,7 @@ describe("Meals Routes", () => {
         {
           name: "Salad",
           description: "Fresh vegetable salad",
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -272,7 +272,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         "",
       );
@@ -289,7 +289,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         "beb64792-65bb-4950-b00e-9ccf8897739e",
       );
@@ -306,7 +306,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         "invalid-session-format",
       );
@@ -332,7 +332,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -372,7 +372,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -412,7 +412,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -452,7 +452,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -467,7 +467,7 @@ describe("Meals Routes", () => {
           name: "Updated Salad",
           description: "Updated fresh vegetable salad",
           is_on_diet: false,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
       );
 
@@ -495,7 +495,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -535,7 +535,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -575,7 +575,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -612,7 +612,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -651,7 +651,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -690,7 +690,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -725,7 +725,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -760,7 +760,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -797,7 +797,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -848,7 +848,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -884,7 +884,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -912,7 +912,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
