@@ -275,6 +275,7 @@
 							{
 								"key": "Cookie",
 								"value": "sessionId=781e7320-3021-4f5d-b5c8-cde981302eae",
+								"description": "id with user session",
 								"type": "text"
 							}
 						],
@@ -288,6 +289,32 @@
 							]
 						},
 						"description": "**Summary:**  \nRetrieves a list of all meals associated with the currently authenticated user.\n\n**Authentication:**  \nRequires a valid session cookie (`sessionId`) to be sent in the request headers. Only meals belonging to the authenticated user will be returned.\n\n**Response Structure:**  \nReturns an array of meal objects. Each meal object contains the following fields:\n\n- `id` (string): Unique identifier for the meal\n    \n- `created_at` (string, ISO 8601): Timestamp when the meal was created\n    \n- `updated_at` (string, ISO 8601): Timestamp when the meal was last updated\n    \n- `name` (string): Name of the meal\n    \n- `description` (string): Description of the meal\n    \n- `is_on_diet` (boolean): Indicates if the meal is on the user's diet\n    \n- `user_id` (string): Unique identifier of the user who owns the meal\n    \n\n**Example Response:**\n\n``` json\n[\n  {\n    \"id\": \"e061ff1a-38ec-4316-8607-5886a77e6e5e\",\n    \"created_at\": \"2025-11-29T18:03:53.942Z\",\n    \"updated_at\": \"2025-11-29T18:27:18.424Z\",\n    \"name\": \"Salad\",\n    \"description\": \"fresh salad\",\n    \"is_on_diet\": true,\n    \"user_id\": \"fcb688eb-e8ab-4bd7-ad9d-55c36401873b\"\n  },\n  {\n    \"id\": \"b03e37a3-fdbf-43a1-8e0e-84359c55e931\",\n    \"created_at\": \"2025-11-29T18:03:53.942Z\",\n    \"updated_at\": \"2025-11-29T18:30:34.703Z\",\n    \"name\": \"Air\",\n    \"description\": \"Air\",\n    \"is_on_diet\": false,\n    \"user_id\": \"fcb688eb-e8ab-4bd7-ad9d-55c36401873b\"\n  }\n]\n\n ```\n\n**Usage Example:**\n\n```\nGET {{DailyDietHost}}/meals\nCookie: sessionId=your-session-id\n\n ```\n\n**Notes:**\n\n- If the session cookie is missing or invalid, the request will be rejected.\n    \n- The endpoint returns only meals for the authenticated user; meals from other users are not accessible.\n    \n- Use this endpoint to fetch all meals for the current user session."
+					},
+					"response": []
+				},
+				{
+					"name": "metrics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "sessionId=781e7320-3021-4f5d-b5c8-cde981302eae",
+								"description": "id with user session",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{DailyDietHost}}/meals/metrics",
+							"host": [
+								"{{DailyDietHost}}"
+							],
+							"path": [
+								"meals",
+								"metrics"
+							]
+						},
+						"description": "Retrieves aggregated metrics about the user's meals.\n\n**What this endpoint does:**\n\n- Returns summary statistics for all meals registered by the authenticated user.\n    \n\n**Response data:**\n\n- `total_meals_registered`: Total number of meals logged by the user.\n    \n- `total_meals_on_diet`: Number of meals that were marked as \"on diet\".\n    \n- `total_meals_off_diet`: Number of meals that were marked as \"off diet\".\n    \n- `best_sequence_of_meals_on_diet`: The longest consecutive sequence of \"on diet\" meals.\n    \n\n**Usage notes:**\n\n- Requires authentication (session cookie).\n    \n- Useful for displaying user progress and dietary adherence over time.\n    \n- No request body is required.\n    \n- Returns HTTP 200 with a JSON object containing the metrics."
 					},
 					"response": []
 				}
