@@ -13,32 +13,15 @@ export default async function usersRoutes(app: FastifyInstance) {
     const result = createUserSchema.safeParse(request.body);
 
     if (!result.success) {
-      if (
-        result.error.issues[0].path.find((p) => p === "email") &&
-        result.error.issues[0].message === "Invalid email address"
-      ) {
-        return reply.status(400).send({
-          error: "Bad Request",
-          message: "body must send a valid email address",
-          statusCode: 400,
-        });
-      }
-      if (result.error.issues[0].path.find((p) => p === "email")) {
-        return reply.status(400).send({
-          error: "Bad Request",
-          message: "body must have required property 'email'",
-          statusCode: 400,
-        });
-      }
-      if (result.error.issues[0].path.find((p) => p === "username")) {
-        return reply.status(400).send({
-          error: "Bad Request",
-          message: "body must have required property 'username'",
-          statusCode: 400,
-        });
-      }
+      const missingFields = result.error.issues.map((issue) => issue.path[0]);
+      return reply.status(400).send({
+        error: "Bad Request",
+        message: `body must have required properties: ${missingFields.join(
+          ", ",
+        )}`,
+        statusCode: 400,
+      });
     }
-
     const existUser = await knex("users")
       .where("email", result.data!.email)
       .first();
@@ -158,23 +141,14 @@ export default async function usersRoutes(app: FastifyInstance) {
     }
 
     if (!result.success) {
-      if (
-        result.error.issues[0].path.find((p) => p === "email") &&
-        result.error.issues[0].message === "Invalid email address"
-      ) {
-        return reply.status(400).send({
-          error: "Bad Request",
-          message: "body must send a valid email address",
-          statusCode: 400,
-        });
-      }
-      if (result.error.issues[0].path.find((p) => p === "email")) {
-        return reply.status(400).send({
-          error: "Bad Request",
-          message: "body must have required property 'email'",
-          statusCode: 400,
-        });
-      }
+      const missingFields = result.error.issues.map((issue) => issue.path[0]);
+      return reply.status(400).send({
+        error: "Bad Request",
+        message: `body must have required properties: ${missingFields.join(
+          ", ",
+        )}`,
+        statusCode: 400,
+      });
     }
 
     if (!user) {

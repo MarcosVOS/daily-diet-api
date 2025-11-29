@@ -9,6 +9,7 @@ if (process.env.NODE_ENV === "test") {
 
 const envSchema = z.object({
   ENV: z.enum(["production", "development", "test"]).default("production"),
+  DAILY_DIET_API_PORT: z.coerce.number().default(3000),
   PG_PORT: z.coerce.number().default(5432),
   POSTGRES_USER: z.string(),
   POSTGRES_PASSWORD: z.string(),

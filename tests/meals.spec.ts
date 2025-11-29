@@ -9,7 +9,7 @@ interface MealsEntity {
   name?: string;
   description?: string;
   is_on_diet?: boolean;
-  created_at?: string;
+  created_at?: Date;
 }
 
 async function createMealsRequest(
@@ -51,6 +51,12 @@ async function updateMealsRequest(
     .set("Cookie", [`sessionId=${sessionID}`]);
 }
 
+async function getMealsMetricsRequest(app: FastifyInstance, sessionID: string) {
+  return request(app.server)
+    .get("/meals/metrics")
+    .set("Cookie", [`sessionId=${sessionID}`]);
+}
+
 describe("Meals Routes", () => {
   beforeAll(async () => {
     app.ready();
@@ -71,7 +77,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -146,7 +152,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -173,7 +179,7 @@ describe("Meals Routes", () => {
         {
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -200,7 +206,7 @@ describe("Meals Routes", () => {
         {
           name: "Salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -227,7 +233,7 @@ describe("Meals Routes", () => {
         {
           name: "Salad",
           description: "Fresh vegetable salad",
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -260,7 +266,7 @@ describe("Meals Routes", () => {
         expect.objectContaining({
           error: "Bad Request",
           message:
-            "body must have required properties: name, description, is_on_diet",
+            "body must have required properties: name, description, is_on_diet, created_at",
           statusCode: 400,
         }),
       );
@@ -272,7 +278,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         "",
       );
@@ -289,7 +295,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         "beb64792-65bb-4950-b00e-9ccf8897739e",
       );
@@ -306,7 +312,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         "invalid-session-format",
       );
@@ -332,7 +338,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -372,7 +378,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -412,7 +418,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -452,7 +458,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -467,7 +473,7 @@ describe("Meals Routes", () => {
           name: "Updated Salad",
           description: "Updated fresh vegetable salad",
           is_on_diet: false,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
       );
 
@@ -495,7 +501,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -535,7 +541,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -575,7 +581,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -612,7 +618,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -651,7 +657,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -690,7 +696,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -725,7 +731,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -760,7 +766,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -797,7 +803,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -848,7 +854,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -884,7 +890,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -912,7 +918,7 @@ describe("Meals Routes", () => {
           name: "Salad",
           description: "Fresh vegetable salad",
           is_on_diet: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         },
         createUser.body.session_id,
       );
@@ -923,6 +929,184 @@ describe("Meals Routes", () => {
 
       expect(deleteMeals.statusCode).toBe(401);
       expect(deleteMeals.body).toEqual(
+        expect.objectContaining({ error: "Unauthorized" }),
+      );
+    });
+  });
+  describe("Metrics meals", () => {
+    it("should be possible to list metrics with user without data", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_metrics_user_without_data@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const metricsMeals = await getMealsMetricsRequest(
+        app,
+        createUser.body.session_id,
+      );
+      expect(metricsMeals.statusCode).toBe(200);
+      expect(metricsMeals.body).toEqual(
+        expect.objectContaining({
+          total_meals_registered: 0,
+          total_meals_on_diet: 0,
+          total_meals_off_diet: 0,
+          best_sequence_of_meals_on_diet: 0,
+        }),
+      );
+    });
+    it("should be possible to list metrics", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_metrics@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal1 = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: false,
+          created_at: new Date(),
+        },
+        createUser.body.session_id,
+      );
+      expect(createMeal1.statusCode).toBe(200);
+
+      const createMeal2 = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: false,
+          created_at: new Date(),
+        },
+        createUser.body.session_id,
+      );
+      expect(createMeal2.statusCode).toBe(200);
+
+      const createMeal3 = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: false,
+          created_at: new Date(),
+        },
+        createUser.body.session_id,
+      );
+      expect(createMeal3.statusCode).toBe(200);
+
+      const createMeal4 = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date(),
+        },
+        createUser.body.session_id,
+      );
+      expect(createMeal4.statusCode).toBe(200);
+
+      const createMeal5 = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date(),
+        },
+        createUser.body.session_id,
+      );
+      expect(createMeal5.statusCode).toBe(200);
+
+      const createMeal6 = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date(),
+        },
+        createUser.body.session_id,
+      );
+      expect(createMeal6.statusCode).toBe(200);
+
+      const getMealsMetrics = await getMealsMetricsRequest(
+        app,
+        createUser.body.session_id,
+      );
+
+      expect(getMealsMetrics.statusCode).toBe(200);
+      expect(getMealsMetrics.body).toEqual(
+        expect.objectContaining({
+          total_meals_registered: 6,
+          total_meals_on_diet: 3,
+          total_meals_off_diet: 3,
+          best_sequence_of_meals_on_diet: 3,
+        }),
+      );
+    });
+    it("Shouldn't be possible to list metrics without session", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_metrics_without_session@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const metricsMeals = await getMealsMetricsRequest(app, "");
+
+      expect(metricsMeals.statusCode).toBe(401);
+      expect(metricsMeals.body).toEqual(
+        expect.objectContaining({ error: "Unauthorized" }),
+      );
+    });
+    it("Shouldn't be possible to list metrics with invalid session", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "meal_user_metrics_with_invalid_session@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const metricsMeals = await getMealsMetricsRequest(
+        app,
+        "invalid-session-id",
+      );
+
+      expect(metricsMeals.statusCode).toBe(401);
+      expect(metricsMeals.body).toEqual(
         expect.objectContaining({ error: "Unauthorized" }),
       );
     });

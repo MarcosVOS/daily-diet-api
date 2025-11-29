@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { knex } from "../database.js";
+import { knex } from "../database.ts";
 import { z } from "zod";
 
 export async function checkSessionIdExists(
@@ -13,7 +13,7 @@ export async function checkSessionIdExists(
     });
   }
 
-  const validSession = z.string().uuid().safeParse(sessionId);
+  const validSession = z.uuid().safeParse(sessionId);
   if (!validSession.success) {
     return reply.status(401).send({
       error: "Unauthorized",
