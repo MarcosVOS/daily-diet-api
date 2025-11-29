@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import app from "../src/app";
+import { app } from "../src/app";
 import request from "supertest";
 
 describe("Status Routes", () => {

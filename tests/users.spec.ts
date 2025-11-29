@@ -1,13 +1,9 @@
 import { describe, expect, it } from "vitest";
-import app from "../src/app";
+import { app } from "../src/app";
 import { before } from "node:test";
 import { FastifyInstance } from "fastify";
 import request from "supertest";
 import { knex } from "../src/database";
-import { Knex as setupKnex } from "knex";
-import { object } from "zod";
-import { get } from "http";
-import { promises } from "dns";
 
 interface UserEntity {
   username?: string;
