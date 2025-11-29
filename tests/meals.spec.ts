@@ -23,13 +23,91 @@ async function createMealsRequest(
     .set("Cookie", [`sessionId=${sessionID}`]);
 }
 
+async function getMealsRequest(app: FastifyInstance, sessionID: string) {
+  return request(app.server)
+    .get("/meals")
+    .set("Cookie", [`sessionId=${sessionID}`]);
+}
+
 describe("Meals Routes", () => {
   beforeAll(async () => {
     app.ready();
     prepareDatabase();
   });
   describe("Get /meals", () => {
-    it("should", async () => {});
+    it("should be possible to list all meals", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "create_user_list_meals@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const createMeal = await createMealsRequest(
+        app,
+        {
+          name: "Salad",
+          description: "Fresh vegetable salad",
+          is_on_diet: true,
+          created_at: new Date().toISOString(),
+        },
+        createUser.body.session_id,
+      );
+
+      expect(createMeal.statusCode).toBe(200);
+
+      const listMeals = await getMealsRequest(app, createUser.body.session_id);
+
+      expect(listMeals.statusCode).toBe(200);
+
+      expect(listMeals.body).toHaveLength(1);
+      expect(listMeals.body).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            name: "Salad",
+            description: "Fresh vegetable salad",
+            is_on_diet: true,
+          }),
+        ]),
+      );
+    });
+    it("should be possible to list a user's meals without any registered", async () => {
+      const createUser = await createUserRequest(app, {
+        username: "meal_user",
+        email: "create_user_list_meals_without_any_registered@example.com",
+      });
+
+      expect(createUser.statusCode).toBe(201);
+
+      const listMeals = await getMealsRequest(app, createUser.body.session_id);
+
+      expect(listMeals.statusCode).toBe(200);
+      expect(listMeals.body).toHaveLength(0);
+    });
+    it("should not be possible to list the meals of a user that does not exist", async () => {
+      const listMeals = await getMealsRequest(
+        app,
+        "99695c5b-86a4-4d56-9307-6d41a8b04eff",
+      );
+      expect(listMeals.statusCode).toBe(401);
+      expect(listMeals.body).toEqual(
+        expect.objectContaining({ error: "Unauthorized" }),
+      );
+    });
+    it("should not be possible to list a user's meals without sending the session", async () => {
+      const listMeals = await getMealsRequest(app, "");
+      expect(listMeals.statusCode).toBe(401);
+      expect(listMeals.body).toEqual(
+        expect.objectContaining({ error: "Unauthorized" }),
+      );
+    });
+    it("should not be possible to return a user's meals by sending an invalid id", async () => {
+      const listMeals = await getMealsRequest(app, "_invalid_session_id_");
+      expect(listMeals.statusCode).toBe(401);
+      expect(listMeals.body).toEqual(
+        expect.objectContaining({ error: "Unauthorized" }),
+      );
+    });
   });
   describe("Post /meals", () => {
     it("should be possible to create a meal", async () => {
